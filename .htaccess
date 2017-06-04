@@ -1,0 +1,28 @@
+# this is for Vagrant, please follow the instructions in the README for proper produdction installation
+
+RewriteEngine On
+
+# Some hosts may require you to use the `RewriteBase` directive.
+# If you need to use the `RewriteBase` directive, it should be the
+# absolute physical path to the directory that contains this htaccess file.
+#
+# RewriteBase /
+
+# this forwards root domain requests to the home page
+# RedirectMatch ^/$ /home/
+
+# this handles API requests
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^api controller.php [QSA,L]
+
+<Files ~ "\.ini$">
+  Order allow,deny
+  Deny from all
+</Files>
+
+<Files ~ "\.phar$">
+  Order allow,deny
+  Deny from all
+</Files>
+
+RewriteRule .* - [env=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

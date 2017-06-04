@@ -1,0 +1,9 @@
+.idea/
+.vagrant/
+ini/config-dev.ini
+ini/config-local.ini
+ini/config-prod.ini
+build/
+reports/
+tmp/
+vendor/

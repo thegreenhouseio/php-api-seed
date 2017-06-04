@@ -1,0 +1,20 @@
+{
+  "config": {
+    "vendor-dir": "vendor"
+  },
+  "require": {
+    "slim/slim": "2.6.2",
+    "firebase/php-jwt": "3.0",
+    "phpmailer/phpmailer": "5.2.x"
+  },
+  "require-dev": {
+    "phing/phing": "2.14.0",
+    "phpunit/phpunit": "4.6.0",
+    "phpdocumentor/phpdocumentor": "2.8.5"
+  },
+  "autoload":{
+    "psr-4": {
+      "tgh\\" : "/src"
+    }
+  }
+}

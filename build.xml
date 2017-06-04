@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="tgh-api" default="info" basedir="." description="The Greenhouse - API Starter" phingVersion="2.10.0">
+
+  <php expression="include('vendor/autoload.php')"/>
+
+  <property name="project.version" value="0.1.0-SNAPSHOT" />
+  <property name="buildDir" value="build"/>
+
+  <fileset dir="src" id="projectFiles">
+    <include name="**/*.php" />
+  </fileset>
+
+  <fileset dir="." id="vendorFiles">
+    <include name="vendor/composer/**/*.php" />
+    <include name="vendor/slim/slim/Slim/**/*.php" />
+    <include name="vendor/firebase/php-jwt/src/*.php" />
+    <include name="vendor/phpunit/phpunit/src/Framework/Assert/Functions.php" />
+    <include name="vendor/herrera-io/json/src/lib/json_version.php" />
+    <include name="vendor/herrera-io/phar-update/src/lib/constants.php" />
+    <include name="vendor/symfony/polyfill-mbstring/bootstrap.php" />
+    <include name="vendor/phpmailer/phpmailer/class.phpmailer.php" />
+    <include name="vendor/phpmailer/phpmailer/class.smtp.php" />
+    <include name="vendor/autoload.php" />
+  </fileset>
+
+  <!-- TODO add more files to coverage reporting -->
+  <fileset dir="." id="coverageFiles">
+    <include name="src/**/*.php"/>
+    <exclude name="src/controllers/*.php"/>
+    <exclude name="src/stub.php"/>
+    <exclude name="src/controller.php"/>
+    <exclude name="src/routes/*.php"/>
+  </fileset>
+
+  <!-- build targets -->
+  <target name="develop" description="executes a developer build (just unit testing)">
+    <echo msg="starting a develop build..."/>
+    <phingcall target="clean" />
+    <phingcall target="lint" />
+    <phingcall target="test" />
+  </target>
+
+  <target name="build" description="executes a production build">
+    <echo msg="starting a build..."/>
+    <phingcall target="info" />
+    <phingcall target="clean" />
+    <phingcall target="lint" />
+    <phingcall target="test" />
+    <phingcall target="package" />
+    <phingcall target="docs" />
+  </target>
+
+  <target name="build:exp" description="executes an 'expedited' production build (no tests or docs)">
+    <echo msg="starting a local build..."/>
+    <phingcall target="clean" />
+    <phingcall target="lint" />
+    <phingcall target="package" />
+  </target>
+
+  <!-- supporting build targets -->
+  <target name="info" description="Displays basic project information">
+    <echo message="This is project ${phing.project.name}" />
+    <echo message="Current version of the project is: ${project.version}" />
+   </target>
+
+  <target name="clean">
+    <echo msg="cleaning build directories..."/>
+
+    <delete includeemptydirs="true" quiet="true">
+      <fileset dir="build">
+        <include name="**/**"/>
+      </fileset>
+    </delete>
+
+    <delete includeemptydirs="true" quiet="true">
+      <fileset dir="${buildDir}">
+        <include name="**/**"/>
+      </fileset>
+    </delete>
+
+    <delete includeemptydirs="true" quiet="true">
+      <fileset dir="tmp">
+        <include name="**/**"/>
+      </fileset>
+    </delete>
+
+    <delete includeemptydirs="true" quiet="true">
+      <fileset dir="reports">
+        <include name="**/**"/>
+      </fileset>
+    </delete>
+
+  </target>
+
+  <target name="lint">
+    <echo msg="linting project..."/>
+    <phplint haltonfailure="true" level="verbose" deprecatedAsError="true">
+      <fileset dir="." >
+        <include name="src/**/*.php"/>
+        <include name="test/**/*.php"/>
+      </fileset>
+    </phplint>
+  </target>
+
+  <target name="test">
+    <mkdir dir="${buildDir}" />
+
+    <mkdir dir="reports/"/>
+    <mkdir dir="reports/coverage_db"/>
+    <mkdir dir="reports/coverage_result"/>
+
+    <echo msg="preparing code coverage database..."/>
+    <coverage-setup database="reports/coverage_db/coverage.db">
+      <fileset refid="coverageFiles"/>
+    </coverage-setup>
+
+    <echo msg="running tests..."/>
+    <phpunit printsummary="true" haltonerror="true" haltonincomplete="true" haltonfailure="true" haltonskipped="true" codecoverage="true">
+      <formatter type="xml" outfile="reports/test-results.xml">
+      </formatter>
+      <batchtest>
+        <fileset dir="test/" >
+          <include name="**/*.php"/>
+        </fileset>
+      </batchtest>
+    </phpunit>
+    <phpunitreport todir="${buildDir}"/>
+
+    <echo msg="generating code coverage results..."/>
+    <coverage-report outfile="reports/coverage_db/coverage.xml">
+      <report todir="reports/coverage_result"/>
+    </coverage-report>
+
+  </target>
+
+  <target name="docs" description="tgh-api documentation">
+    <exec command="phpdoc -d src/ -t reports/docs --template responsive"/>
+  </target>
+
+  <target name="package">
+    <echo msg="packaging application..."/>
+
+    <echo msg="preparing packaging directories..."/>
+    <mkdir dir="${buildDir}" />
+    <mkdir dir="tmp" />
+
+    <echo msg="copying build files..."/>
+    <copy todir="tmp">
+      <fileset refid="projectFiles" />
+      <fileset refid="vendorFiles" />
+    </copy>
+
+    <copy file="src/controller.php" tofile="tmp/controller.php" />
+
+    <echo msg="creating phar archive..."/>
+    <pharpackage
+      destfile="${buildDir}/tgh-api.phar"
+      basedir="tmp/"
+      compression="gzip"
+      stub="src/stub.php"
+      signature="sha1">
+      <fileset dir="tmp">
+        <include name="**/**" />
+      </fileset>
+      <metadata>
+        <element name="version" value="${project.version}" />
+        <element name="authors">
+          <element name="Owen Buckley">
+            <element name="email" value="owen.buckley@analogstudios.net" />
+          </element>
+        </element>
+      </metadata>
+    </pharpackage>
+
+    <echo msg="moving build files..."/>
+    <copy file="tmp/controller.php" tofile="${buildDir}/controller.php" />
+    <copy file="ini/config-bootstrap.ini" tofile="${buildDir}/config.ini" />
+
+  </target>
+
+</project>
