@@ -12,10 +12,10 @@ installed globally in dev / prod environments.
 - [Composer](https://getcomposer.org/) - PHP package manager.
 - [Slim v2](https://www.slimframework.com/) - API centric micro-framework.
 - [Phar](http://php.net/manual/en/book.phar.php) - Build artifact of the project (PHP Archive).
-- [Vagrant](https://www.vagrantup.com/) - used with VirtualBox to provide a headless VM for local development
-- [VirtualBox](https://www.virtualbox.org/wiki/VirtualBox) - Virtualization software for managing a Ubuntu based VM 
+- [Vagrant v1.9.5](https://www.vagrantup.com/) - used with VirtualBox to provide a headless VM for local development
+- [VirtualBox v5.1.22](https://www.virtualbox.org/wiki/VirtualBox) - Virtualization software for managing a Ubuntu based VM 
 local development environment
-- [MySQL 5.5](https://www.mysql.com/) - Relational database.
+- [MySQL v5.5](https://www.mysql.com/) - Relational database.
 - [Apache 2](https://httpd.apache.org/) - recommended HTTP webserver, and used locally for development.
 - [Ubuntu 16.04](https://www.ubuntu.com/) - Recommended Linux distrubution, and used locally for development
 
