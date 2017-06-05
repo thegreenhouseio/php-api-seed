@@ -4,7 +4,7 @@
   <php expression="include('vendor/autoload.php')"/>
 
   <property name="project.name" value="tgh-api" />
-  <property name="project.version" value="0.1.0" />
+  <property name="project.version" value="0.1.1" />
   <property name="buildDir" value="build"/>
 
   <fileset dir="src" id="projectFiles">
