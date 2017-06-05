@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # assumes build.sh has been run
-$DEPLOY_DIR=/var/www/html/
+DEPLOY_DIR="/var/www/html/"
 
 echo "preparing deployment directory..."
 sudo rm -rvf $DEPLOY_DIR*.phar
